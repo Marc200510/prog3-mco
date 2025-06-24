@@ -1,5 +1,6 @@
 package controller;
 
+import model.Move; // Added import for Move class
 import model.Pokemon;
 import model.Type;
 import model.database.PokemonDatabase;
@@ -38,9 +39,9 @@ public class PokemonController {
     public int initializeDefaultPokemon() {
         return pokemonDb.initializeDefaultPokemon();
     }
-
+    
     /**
-     * Adds a new Pokémon to the database
+     * Adds a new Pokémon to the database with a move set and held item
      * 
      * @param pokedexNumber The Pokédex number
      * @param name The Pokémon's name
@@ -54,11 +55,14 @@ public class PokemonController {
      * @param attack The base Attack stat
      * @param defense The base Defense stat
      * @param speed The base Speed stat
+     * @param moveSet The move set for the Pokémon
+     * @param heldItem The item held by the Pokémon
      * @return true if the Pokémon was added, false if a Pokémon with the same Pokédex number or name already exists
      */
     public boolean addPokemon(int pokedexNumber, String name, String type1, String type2, 
                              int baseLevel, int evolvesFrom, int evolvesTo, int evolutionLevel, 
-                             int hp, int attack, int defense, int speed) {
+                             int hp, int attack, int defense, int speed,
+                             List<model.Move> moveSet, model.Item heldItem) {
         // Validate input
         if (pokedexNumber <= 0 || name == null || name.trim().isEmpty()) {
             return false;
@@ -71,10 +75,13 @@ public class PokemonController {
             return false; // Primary type cannot be NONE
         }
         
+        // Create Pokémon with moveSet and heldItem
         Pokemon pokemon = new Pokemon(pokedexNumber, name, primaryType, secondaryType, 
                                       baseLevel, evolvesFrom, evolvesTo, evolutionLevel, 
                                       hp, attack, defense, speed);
-        
+        if (moveSet != null) pokemon.setMoveSet(moveSet);
+        if (heldItem != null) pokemon.setHeldItem(heldItem);
+
         return pokemonDb.addPokemon(pokemon);
     }
     
@@ -131,6 +138,47 @@ public class PokemonController {
         return pokemonDb.getPokemonByName(name);
     }
     
+    /**
+     * Adds a move to a Pokémon's move set
+     * 
+     * @param pokemon The Pokémon
+     * @param move The move to add
+     * @return true if the move was added, false if the move set is full
+     */
+    public boolean addMoveToPokemon(Pokemon pokemon, Move move) {
+        if (pokemon == null || move == null) {
+            return false;
+        }
+        
+        if (pokemon.getMoveSetSize() < 4) {
+            pokemon.addMoveToSet(move);
+            return true;
+        }
+        
+        return false;
+    }
+
+    /**
+     * Removes a move from a Pokémon's move set
+     * 
+     * @param pokemon The Pokémon
+     * @param moveIndex The index of the move to remove
+     * @return true if the move was removed, false otherwise
+     */
+    public boolean removeMoveFromPokemon(Pokemon pokemon, int moveIndex) {
+        if (pokemon == null || moveIndex < 0 || moveIndex >= pokemon.getMoveSetSize()) {
+            return false;
+        }
+        
+        Move move = pokemon.getMoveAt(moveIndex);
+        if (move.getClassification() == Move.Classification.HM) {
+            return false; // Cannot remove HM moves
+        }
+        
+        pokemon.removeMoveFromSet(moveIndex);
+        return true;
+    }
+
     /**
      * Makes a Pokémon cry
      * 

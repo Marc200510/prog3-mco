@@ -409,9 +409,80 @@ public class App {
             int defense = getIntInput("Enter Defense: ");
             int speed = getIntInput("Enter Speed: ");
 
-            boolean added = pokemonController.addPokemon(pokedexNumber, name, type1, type2,
-                    baseLevel, evolvesFrom, evolvesTo, evolutionLevel,
-                    hp, attack, defense, speed);
+            // --- Prompt for Move Set ---
+            List<Move> availableMoves = moveController.getAllMoves();
+            List<Move> moveSet = new java.util.ArrayList<>();
+
+            System.out.println("\nHere's the list of the available moves:");
+            for (int i = 0; i < availableMoves.size(); i++) {
+                System.out.printf("%d. %s\n", i + 1, availableMoves.get(i).getName());
+            }
+            /* (mco2 req)
+            System.out.println("By default, new Pokémon will have 'Tackle' and 'Defend' as their moves.");
+
+            // Try to add Tackle and Defend if available
+            Move tackle = null, defend = null;
+            for (Move m : availableMoves) {
+                if (m.getName().equalsIgnoreCase("Tackle")) tackle = m;
+                if (m.getName().equalsIgnoreCase("Defend")) defend = m;
+            }
+            if (tackle != null) moveSet.add(tackle);
+            if (defend != null) moveSet.add(defend);
+
+            */
+
+            // Optionally, let user add more moves (up to 4)
+          
+            while (moveSet.size() < 4) {
+                int moveChoice = getIntInput("Enter move number to add: ");
+                if (moveChoice < 1 || moveChoice > availableMoves.size()) {
+                    System.out.println("Invalid move number.");
+                    continue;
+                }
+
+                Move chosen = availableMoves.get(moveChoice - 1);
+                if (moveSet.contains(chosen)) {
+                    System.out.println("Move already in move set.");
+                    continue;
+                }
+
+                moveSet.add(chosen);
+                System.out.println(chosen.getName() + " added.");
+
+                if (moveSet.size() < 4) {
+                    String addMore = getStringInput("Do you want to add another move? (y/n): ").trim().toLowerCase();
+                    if (!addMore.equals("y"))
+                        break;
+                }
+            }
+            // --- Prompt for Held Item ---
+            List<Item> items = itemController.getAllItems();
+            Item heldItem = null;
+            System.out.println("\nAvailable Items:");
+            for (int i = 0; i < items.size(); i++) {
+                System.out.printf("%d. %s\n", i + 1, items.get(i).getName());
+            }
+            String itemChoice = getStringInput("Enter item number to hold (leave blank for none): ").trim();
+            if (!itemChoice.isEmpty()) {
+                try {
+                    int itemNum = Integer.parseInt(itemChoice);
+                    if (itemNum >= 1 && itemNum <= items.size()) {
+                        heldItem = items.get(itemNum - 1);
+                    } else {
+                        System.out.println("Invalid item number. No item will be held.");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input. No item will be held.");
+                }
+            }
+
+            // Add Pokémon using controller
+            boolean added = pokemonController.addPokemon(
+                pokedexNumber, name, type1, type2,
+                baseLevel, evolvesFrom, evolvesTo, evolutionLevel,
+                hp, attack, defense, speed,
+                moveSet, heldItem // <-- Pass move set and held item
+            );
 
             if (added) {
                 System.out.println("SUCCESS: Pokémon added successfully!");
