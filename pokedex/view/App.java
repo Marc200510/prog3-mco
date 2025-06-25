@@ -509,41 +509,55 @@ public class App {
         }
 
         System.out.println("Found " + pokemons.size() + " Pokémon:");
-        System.out.println(
-                "-----------------------------------------------------------------------------------------------------------------------------");
-        System.out.printf("| %-5s | %-12s | %-14s | %-5s | %-26s | %-12s | %-12s |\n",
-                "ID", "Name", "Type", "Level", "Stats (HP/ATK/DEF/SPD)", "Evolves From", "Evolves To");
-        System.out.println(
-                "-----------------------------------------------------------------------------------------------------------------------------");
-
+        
         for (Pokemon pokemon : pokemons) {
+            System.out.println("\n-------------------------------------------------------");
+            System.out.printf("| #%03d: %-20s | Level: %-3d |\n", 
+                    pokemon.getPokedexNumber(), pokemon.getName(), pokemon.getBaseLevel());
+            
+            // Display type information
             String typeStr = pokemon.getType1().toString();
             if (pokemon.getType2() != Type.NONE) {
                 typeStr += "/" + pokemon.getType2().toString();
             }
-
-            String statsStr = String.format("%d/%d/%d/%d",
-                    pokemon.getHp(), pokemon.getAttack(),
-                    pokemon.getDefense(), pokemon.getSpeed());
-
-            String evolvesFromStr = (pokemon.getEvolvesFrom() > 0)
-                    ? "#" + String.format("%03d", pokemon.getEvolvesFrom())
-                    : "-";
-
-            String evolvesToStr = (pokemon.getEvolvesTo() > 0) ? "#" + String.format("%03d", pokemon.getEvolvesTo()) +
-                    " (Lvl " + pokemon.getEvolutionLevel() + ")" : "-";
-
-            System.out.printf("| #%-3s | %-12s | %-14s | %-5d | %-26s | %-12s | %-12s |\n",
-                    String.format("%03d", pokemon.getPokedexNumber()),
-                    pokemon.getName(),
-                    typeStr,
-                    pokemon.getBaseLevel(),
-                    statsStr,
-                    evolvesFromStr,
-                    evolvesToStr);
+            System.out.printf("| Type: %-30s |\n", typeStr);
+            
+            // Display stats
+            System.out.printf("| Stats: HP=%-3d ATK=%-3d DEF=%-3d SPD=%-3d |\n",
+                    pokemon.getHp(), pokemon.getAttack(), pokemon.getDefense(), pokemon.getSpeed());
+            
+            // Display evolution information
+            if (pokemon.getEvolvesFrom() > 0) {
+                System.out.printf("| Evolves from: #%03d %-20s |\n", pokemon.getEvolvesFrom(), "");
+            }
+            if (pokemon.getEvolvesTo() > 0) {
+                System.out.printf("| Evolves to: #%03d at level %-14d |\n", 
+                        pokemon.getEvolvesTo(), pokemon.getEvolutionLevel());
+            }
+            
+            // Display moves
+            System.out.println("| Moves:                                   |");
+            List<Move> moves = pokemon.getMoveSet();
+            if (moves.isEmpty()) {
+                System.out.println("|   None                                   |");
+            } else {
+                for (Move move : moves) {
+                    System.out.printf("|   %-20s (Type: %-10s) |\n", 
+                            move.getName(), move.getType());
+                }
+            }
+            
+            // Display held item
+            Item heldItem = pokemon.getHeldItem();
+            System.out.print("| Held Item: ");
+            if (heldItem != null) {
+                System.out.printf("%-25s |\n", heldItem.getName());
+            } else {
+                System.out.println("None                      |");
+            }
+            
+            System.out.println("-------------------------------------------------------");
         }
-        System.out.println(
-                "-----------------------------------------------------------------------------------------------------------------------------");
 
         pressEnterToContinue();
     }

@@ -183,71 +183,18 @@ public class Pokemon {
         this.heldItem = item;
     }
     
-    /**
-     * Adds a move to this Pokémon's move set
-     * 
-     * @param move The move to add
-     * @return true if the move was added, false if the move set is full
-     */
-    public boolean addMove(Move move) {
-        if (moveSet.size() < 4) {
-            moveSet.add(move);
-            return true;
-        }
-        return false;
-    }
-    
-    /**
-     * Removes a move from this Pokémon's move set
-     * 
-     * @param moveIndex The index of the move to remove
-     * @return true if the move was removed, false otherwise
-     */
-    public boolean removeMove(int moveIndex) {
-        if (moveIndex >= 0 && moveIndex < moveSet.size()) {
-            Move move = moveSet.get(moveIndex);
-            if (move.getClassification() == Move.Classification.HM) {
-                return false; // Cannot remove HM moves
-            }
-            moveSet.remove(moveIndex);
-            return true;
-        }
-        return false;
-    }
-    
-    /**
-     * Basic setter to add a move to this Pokémon's move set (no validation)
-     * 
-     * @param move The move to add
-     */
     public void addMoveToSet(Move move) {
         moveSet.add(move);
     }
 
-    /**
-     * Basic setter to remove a move from this Pokémon's move set (no validation)
-     * 
-     * @param moveIndex The index of the move to remove
-     */
     public void removeMoveFromSet(int moveIndex) {
         moveSet.remove(moveIndex);
     }
 
-    /**
-     * Gets the size of the Pokémon's move set
-     * 
-     * @return The number of moves in the move set
-     */
     public int getMoveSetSize() {
         return moveSet.size();
     }
 
-    /**
-     * Gets a specific move from the move set
-     * 
-     * @param index The index of the move
-     * @return The move at the specified index
-     */
     public Move getMoveAt(int index) {
         return moveSet.get(index);
     }
